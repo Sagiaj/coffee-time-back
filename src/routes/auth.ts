@@ -1,7 +1,6 @@
 import express from 'express';
 import AuthService from '../services/auth-service';
 import AuthUtilities from '../utilities/auth';
-import JwtService from '../services/jwt-service';
 const router = express.Router();
 
 router.post('/login', async (req, res) => {
@@ -16,11 +15,11 @@ router.post('/login', async (req, res) => {
 
 router.post('/register', async (req, res) => {
     try {
-        let user = await AuthService.register(req.body);
-        let token: string = await JwtService.sign(user);
+        let { user, token } = await AuthService.register(req.body);
+        console.log('RETURNING',user, token);
         return res.send({ user, token });
     } catch (err) {
-        console.log('LOL error!', err)
+        console.log(`Errored in register: ${err}`);
         return res.status(500).send(err);
     }
 });

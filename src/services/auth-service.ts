@@ -23,6 +23,7 @@ class AuthService {
             let newUser = await Users.create({ username, email, password });
             let user: User = User.createFromDBObject(newUser);
             let token: string = await JwtService.sign(user);
+            console.log('CHECK CREATED USER FROM DBOBJ:', user)
             return { user, token };
         } catch (err) {
             console.log(`Errored in AuthService/register: ${err}`);
