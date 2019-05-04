@@ -2,9 +2,10 @@ import Sequelize from 'sequelize';
 import db from '../../config/database';
 
 const Users = db.define('users', {
-    id: {
-        primaryKey: true,
-        type: Sequelize.INTEGER
+    id: {        
+        type: Sequelize.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
     },
     username: {
         type: Sequelize.STRING
