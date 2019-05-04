@@ -4,8 +4,8 @@ const { SECRET_KEY } = process.env;
 class JwtService {
     static async sign(user: any): Promise<string> {
         try {
-            let jsonUser = JSON.parse(JSON.stringify(user));
-            let token: string = await jwt.sign(jsonUser, SECRET_KEY);
+            let plainUserObject = Object.assign({}, user);
+            let token: string = await jwt.sign(plainUserObject, SECRET_KEY);
             return token;
         } catch (err) {
             console.log(`Errored in JwtService/sign: ${err}`)
@@ -14,8 +14,8 @@ class JwtService {
     }
 
     static async getVerifiedUserByToken(token: string): Promise<any> {
-        let jsonUser = await jwt.verify(token, SECRET_KEY);
-        return jsonUser.user;
+        let user = await jwt.verify(token, SECRET_KEY);
+        return user;
     }
 }
 

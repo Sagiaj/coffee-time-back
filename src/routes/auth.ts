@@ -1,10 +1,8 @@
-import Users from '../models/users';
-import jwt from 'jsonwebtoken';
 import express from 'express';
 import AuthService from '../services/auth-service';
+import AuthUtilities from '../utilities/auth';
 import JwtService from '../services/jwt-service';
 const router = express.Router();
-const { SECRET_KEY } = process.env;
 
 router.post('/login', async (req, res) => {
     try {
@@ -27,9 +25,9 @@ router.post('/register', async (req, res) => {
     }
 });
 
-router.get('/getVerifiedUserByToken/:token', async (req, res) => {
+router.get('/getVerifiedUserByToken', AuthUtilities.verifyToken, async (req, res) => {
     try {
-        let token: string = req.param('token', '');
+        let token: string = req.headers.jwtToken || '';
         if (!token) {
             console.log(`Errored in getVerifiedUserByToken - empty token`);
             return res.status(403).send("Token empty - user not found.");
