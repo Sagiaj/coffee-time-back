@@ -7,8 +7,9 @@ var sequelize_1 = __importDefault(require("sequelize"));
 var database_1 = __importDefault(require("../../config/database"));
 var Users = database_1.default.define('users', {
     id: {
-        primaryKey: true,
-        type: sequelize_1.default.INTEGER
+        type: sequelize_1.default.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
     },
     username: {
         type: sequelize_1.default.STRING

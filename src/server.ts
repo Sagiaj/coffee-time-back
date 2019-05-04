@@ -23,7 +23,7 @@ app.use('/api', routes.Api);
 // Initialize socket
 const server = io.init(app);
 
-io.on('connection', (socket: any) => {
+io.on('connection', (socket: any) => {  
     console.log(`received a socket connection! id: ${socket.id}`)
     socket.emit('connected', {id: socket.id})
 });

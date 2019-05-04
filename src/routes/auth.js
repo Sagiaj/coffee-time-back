@@ -39,73 +39,69 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 var _this = this;
 Object.defineProperty(exports, "__esModule", { value: true });
-var users_1 = __importDefault(require("../models/users"));
-var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 var express_1 = __importDefault(require("express"));
+var auth_service_1 = __importDefault(require("../services/auth-service"));
+var jwt_service_1 = __importDefault(require("../services/jwt-service"));
 var router = express_1.default.Router();
 var SECRET_KEY = process.env.SECRET_KEY;
 router.post('/login', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
-    var _a, username, password, user, err_1, errObject;
-    return __generator(this, function (_b) {
-        switch (_b.label) {
-            case 0:
-                _b.trys.push([0, 5, , 6]);
-                _a = req.body, username = _a.username, password = _a.password;
-                return [4 /*yield*/, users_1.default.findOne({ where: { username: username, password: password } })];
-            case 1:
-                user = _b.sent();
-                if (!user) return [3 /*break*/, 3];
-                console.log('found user');
-                return [4 /*yield*/, jsonwebtoken_1.default.sign(user.dataValues, SECRET_KEY, function (err, token) {
-                        if (err) {
-                            res.status(500).send(err);
-                        }
-                        res.send(token);
-                    })];
-            case 2:
-                _b.sent();
-                return [3 /*break*/, 4];
-            case 3:
-                res.status(401).send("User not found!");
-                _b.label = 4;
-            case 4: return [3 /*break*/, 6];
-            case 5:
-                err_1 = _b.sent();
-                console.log("Errored in Login. Error: " + err_1);
-                errObject = {
-                    responseCode: 401,
-                    responseMessage: err_1
-                };
-                return [2 /*return*/, res.status(errObject.responseCode).send(errObject)];
-            case 6: return [2 /*return*/];
-        }
-    });
-}); });
-router.post('/register', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
-    var _a, email, username, password, user, jwtToken, err_2, errObject;
+    var _a, user, token, err_1;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
                 _b.trys.push([0, 2, , 3]);
-                _a = req.body, email = _a.email, username = _a.username, password = _a.password;
-                return [4 /*yield*/, users_1.default.create({
-                        email: email,
-                        username: username,
-                        password: password
-                    })];
+                return [4 /*yield*/, auth_service_1.default.login(req.body)];
             case 1:
-                user = _b.sent();
-                jwtToken = jsonwebtoken_1.default.sign(user.dataValues, SECRET_KEY, function (err, token) {
-                    if (err) {
-                        res.status(500).send(err);
-                    }
-                    res.send(token);
-                });
-                return [3 /*break*/, 3];
+                _a = _b.sent(), user = _a.user, token = _a.token;
+                return [2 /*return*/, res.send({ user: user, token: token })];
             case 2:
-                err_2 = _b.sent();
-                errObject = {};
+                err_1 = _b.sent();
+                console.log("Errored in Login. Error: " + err_1);
+                return [2 /*return*/, res.status(401).send(err_1)];
+            case 3: return [2 /*return*/];
+        }
+    });
+}); });
+router.post('/register', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+    var user, token, err_2;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 3, , 4]);
+                return [4 /*yield*/, auth_service_1.default.register(req.body)];
+            case 1:
+                user = _a.sent();
+                return [4 /*yield*/, jwt_service_1.default.sign(user)];
+            case 2:
+                token = _a.sent();
+                return [2 /*return*/, res.send({ user: user, token: token })];
+            case 3:
+                err_2 = _a.sent();
+                console.log('LOL error!', err_2);
                 return [2 /*return*/, res.status(500).send(err_2)];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); });
+router.get('/getVerifiedUserByToken/:token', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+    var token, user, err_3;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                token = req.param('token', '');
+                if (!token) {
+                    console.log("Errored in getVerifiedUserByToken - empty token");
+                    return [2 /*return*/, res.status(403).send("Token empty - user not found.")];
+                }
+                return [4 /*yield*/, auth_service_1.default.getVerifiedUserByToken(token)];
+            case 1:
+                user = _a.sent();
+                return [2 /*return*/, res.send({ user: user })];
+            case 2:
+                err_3 = _a.sent();
+                console.log("Errored in getVerifiedUserByToken: " + err_3);
+                return [2 /*return*/, res.status(500).send(err_3)];
             case 3: return [2 /*return*/];
         }
     });
