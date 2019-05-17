@@ -1,8 +1,8 @@
-import Sequelize from 'sequelize';
+import Sequelize, { Model } from 'sequelize';
 import db from '../../config/database';
 
 const Users = db.define('users', {
-    id: {        
+    id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
         primaryKey: true
@@ -16,6 +16,21 @@ const Users = db.define('users', {
     password: {
         type: Sequelize.STRING
     }
+}, {
+    sequelize: db,
+    modelName: 'user'
 });
 
+const UsersBuddies = db.define('users_buddies', {
+    userId: {        
+        type: Sequelize.INTEGER
+    },
+    buddyId: {
+        type: Sequelize.INTEGER
+    }
+}, {
+    sequelize: db,
+    modelName: 'usersBuddies'
+});
+Users.belongsToMany(Users, { as: 'Buddies', through: UsersBuddies, foreignKey: 'userId', otherKey: 'buddyId'});
 export default Users;

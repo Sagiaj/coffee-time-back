@@ -16,7 +16,6 @@ router.post('/login', async (req, res) => {
 router.post('/register', async (req, res) => {
     try {
         let { user, token } = await AuthService.register(req.body);
-        console.log('RETURNING',user, token);
         return res.send({ user, token });
     } catch (err) {
         console.log(`Errored in register: ${err}`);

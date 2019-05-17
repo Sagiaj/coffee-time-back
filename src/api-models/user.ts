@@ -4,16 +4,34 @@ class User {
     username: string = '';
     email: string = '';
     password: string = '';
+    buddies: Array<User> = [];
 
-    static createFromDBObject(db_user_obj: any): User {
-        let user = new User();
-        user.isLoggedIn = true;
-        user.id = db_user_obj.id || 0;
-        user.username = db_user_obj.username || '';
-        user.email = db_user_obj.email || '';
-        user.password = db_user_obj.password || '';
+    static getStrippedUserDetails(user: any): User {
+        let strippedUser = new User();
+        strippedUser.isLoggedIn = true;
+        strippedUser.id = user.id || 0;
+        strippedUser.username = user.username || '';
+        strippedUser.email = user.email || '';
+        strippedUser.password = user.password || '';
+
+        return strippedUser;
+    }
+
+    static parseFromDbObject(db_user_obj: any): User {
+        let user = User.getStrippedUserDetails(db_user_obj);
+        user.buddies = db_user_obj.buddies || [];
         
         return user;
+    }
+
+    static parseToUsersList(users: Array<any>): Array<User> {
+        try {
+            let userArr: Array<User> = users.map(user => User.parseFromDbObject(user))
+            return userArr;
+        } catch (err) {
+            console.log(`Errored in parseToUsersList. Could not parse users: ${err}`);
+            throw err;
+        }
     }
 }
 
