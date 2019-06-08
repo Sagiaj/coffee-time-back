@@ -30,7 +30,7 @@ const server = app.listen(process.env.SERVER_PORT, () => {
 const io = socket(server);
 io.on('connection', (socket: any) => {
     console.log(`Received a socket connection! id: ${socket.id}`)
-    socket.emit('connected', {id: socket.id})
+    socket.emit('connected', {id: socket.id});
     socket.on(`sendCoffeeTimeInvitationToBuddies`, ({ buddies, minutes }: any) => {
         socket.broadcast.emit('receiveCoffeeTimeInvitation', {
             buddies: buddies.map((buddy: any) => buddy.username),

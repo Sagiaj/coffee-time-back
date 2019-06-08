@@ -1,5 +1,6 @@
 import Users from "../models/users";
 import User from "../api-models/user";
+import { Op } from 'sequelize';
 
 class UserService {
     static async createUser({ username, email, password, buddies }: any): Promise<User> {
@@ -75,13 +76,32 @@ class UserService {
         }
     }
 
-    static async associateBuddies(user: any, buddies: Array<any>): Promise<User> {
+    static async associateBuddies(userId: number, buddies: Array<any>): Promise<User> {
         try {
-            let objectifiedBuddies = buddies.map(buddy => {id: buddy.id});
-            await user.addBuddy(buddies);
-            return user;
+            let useR = await Users.findOne({
+                where: { id: userId }
+            });
+            await useR.addBuddy(buddies.map(buddy => buddy.id));
+            return await UserService.findUserById({ userId });
         } catch (err) {
             console.log(`Could not associate buddies: ${buddies}`);
+            return Promise.reject(err);
+        }
+    }
+
+    static async findUsersLike(like: string): Promise<Array<User>> {
+        try {
+            let buddies = await Users.findAll({
+                where: {
+                    username: {
+                        [Op.like]: `%${like}%`
+                    }
+                },
+            });
+
+            return buddies;
+        } catch (err) {
+            console.log(`Errored in UserService/findUsersLike. Error: ${err}`);
             return Promise.reject(err);
         }
     }

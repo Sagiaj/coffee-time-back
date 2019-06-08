@@ -17,8 +17,7 @@ router.get('/', async (req, res) => {
 router.post('/users/:userId/buddies', async (req, res) => {
     try {
         let { buddies, userId }: {userId: number, buddies: Array<object>} =  {... req.body, ...req.params};
-        let user = await UserService.findUserById(userId);
-        let updatedUser = await UserService.associateBuddies(user, buddies);
+        let updatedUser = await UserService.associateBuddies(userId, buddies);
         return res.send({ user: updatedUser });
     } catch(err) {
         console.log(`Errored in saving buddies. Error: ${err}`);
@@ -26,4 +25,15 @@ router.post('/users/:userId/buddies', async (req, res) => {
     }
 });
 
+router.get('/users/search/:expression', async (req, res) => {
+    try {
+        console.log('im herereee')
+        let like = req.param('expression', '');
+        let buddies = await UserService.findUsersLike(like);
+        return res.send({ buddies });
+    } catch (err) {
+        console.log(`Errored in searching users like. Error: ${err}`);
+        return res.status(500).send(err);
+    }
+});
 export default router;
