@@ -33,4 +33,4 @@ const UsersBuddies = db.define('users_buddies', {
     modelName: 'usersBuddies'
 });
 Users.belongsToMany(Users, { as: 'Buddies', through: UsersBuddies, foreignKey: 'userId', otherKey: 'buddyId'});
-export default Users;
+module.exports = { Users, UsersBuddies };

@@ -1,4 +1,4 @@
-import Users from "../models/users";
+import { Users, UsersBuddies } from "../models/users";
 import User from "../api-models/user";
 import { Op } from 'sequelize';
 
@@ -78,10 +78,13 @@ class UserService {
 
     static async associateBuddies(userId: number, buddies: Array<any>): Promise<User> {
         try {
-            let useR = await Users.findOne({
+            await UsersBuddies.destroy({
+                where: { userId }
+            });
+            let user = await Users.findOne({
                 where: { id: userId }
             });
-            await useR.addBuddy(buddies.map(buddy => buddy.id));
+            await user.addBuddy(buddies.map(buddy => buddy.id));
             return await UserService.findUserById({ userId });
         } catch (err) {
             console.log(`Could not associate buddies: ${buddies}`);
