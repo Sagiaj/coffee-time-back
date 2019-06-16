@@ -4,7 +4,7 @@ import express from 'express';
 import wrap from './utilities/server-error-handler';
 import bindAppConfig from '../config/app-dependencies';
 // import io from 'express-socket.io';
-import socket from 'socket.io';
+import socketio from 'socket.io';
 import * as routes from './routes';
 import db from '../config/database';
 
@@ -27,14 +27,25 @@ const server = app.listen(process.env.SERVER_PORT, () => {
 });
 
 // Socket events
-const io = socket(server);
+const io = socketio(server);
 io.on('connection', (socket: any) => {
-    console.log(`Received a socket connection! id: ${socket.id}`)
+    // TODO: functionality for users live joining - show img
+    console.log(`Received a socket connection! id: ${socket.id}`);
     socket.emit('connected', {id: socket.id});
-    socket.on(`sendCoffeeTimeInvitationToBuddies`, ({ buddies, minutes }: any) => {
-        socket.broadcast.emit('receiveCoffeeTimeInvitation', {
-            buddies: buddies.map((buddy: any) => buddy.username),
-            minutes
+    socket.on('joinRoom', (room: string) => {
+        socket.join(room);
+    });
+    socket.on('leaveRoom', (room: string) => {
+        socket.leave(room);
+    });
+    socket.on(`sendCoffeeTimeInvitationToBuddies`, ({ buddies, minutes, username }: any) => {
+        // We want the user to broadcast to a room of his friends
+        // socket.broadcast.emit('receiveCoffeeTimeInvitation', {
+        //     buddies: buddies.map((buddy: any) => buddy.username),
+        //     minutes
+        // });
+        buddies.forEach((buddy: any) => {
+            socket.to(`private_${buddy.username}`).emit('receiveCoffeeTimeInvitation', `private_${username}`);
         });
     });
 });
