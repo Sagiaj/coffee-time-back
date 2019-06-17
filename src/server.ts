@@ -45,7 +45,7 @@ io.on('connection', (socket: any) => {
         //     minutes
         // });
         buddies.forEach((buddy: any) => {
-            socket.to(`private_${buddy.username}`).emit('receiveCoffeeTimeInvitation', `private_${username}`);
+            socket.to(`private_${buddy.username}`).emit('receiveCoffeeTimeInvitation', { minutes, username });
         });
     });
 });
