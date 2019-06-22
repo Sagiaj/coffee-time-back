@@ -5,6 +5,7 @@ import wrap from './utilities/server-error-handler';
 import bindAppConfig from '../config/app-dependencies';
 // import io from 'express-socket.io';
 import socketio from 'socket.io';
+import redisAdapter from 'socket.io-redis';
 import * as routes from './routes';
 import db from '../config/database';
 
@@ -28,7 +29,8 @@ const server = app.listen(process.env.SERVER_PORT, () => {
 
 // Socket events
 const io = socketio(server);
-io.on('connection', (socket: any) => {
+io.adapter(redisAdapter({ host: process.env.REDIS_HOST, port: process.env.REDIS_PORT }));
+io.of('/').adapter.on('connection', (socket: any) => {
     // TODO: functionality for users live joining - show img
     console.log(`Received a socket connection! id: ${socket.id}`);
     socket.emit('connected', {id: socket.id});
