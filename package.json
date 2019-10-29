@@ -23,7 +23,7 @@
     "express-socket.io": "^1.0.3",
     "jsonwebtoken": "^8.5.1",
     "mysql2": "^1.6.5",
-    "sequelize": "^5.7.6"
+    "sequelize": "^5.15.1"
   },
   "devDependencies": {
     "@types/compression": "0.0.36",
